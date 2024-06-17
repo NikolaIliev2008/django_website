@@ -21,8 +21,5 @@ def profile(request):
    return render(request, 'users/profile.html')
 
 
-class CustomLogoutView(LogoutView):
-    def get(self, request, *args, **kwargs):
-        return self.post(request, *args, **kwargs)
-
+    
 
