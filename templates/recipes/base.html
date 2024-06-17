@@ -29,10 +29,13 @@
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'about-page'%}">About</a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'recipes-create'%}">Add Recipe</a>
+              </li>
             </ul>
           </div>
           <div class="navbar-nav">
-            {% if request.user.is_authenticated %}
+            {% if user.is_authenticated %}
               <a class="nav-item nav-link" href="{% url 'user-logout' %}">Logout</a>
               <a class="nav-item nav-link" href="{% url 'user-profile' %}">My Profile</a>
             {% else %}

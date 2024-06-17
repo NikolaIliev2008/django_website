@@ -1,29 +1,15 @@
 from django.shortcuts import render
 from . import models
-from django.views.generic import ListView, DetailView,CreateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import ListView, DetailView,CreateView,UpdateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
+from .models import Recipe
+from .serializers import RecipeSerializer
+from django.urls import reverse_lazy
 
-recipes = [
-    {
-      'author': 'Tom',
-      'title': 'meatball sub',
-      'directions': 'combine everything',
-      'date_posted': 'June 2024'
-    },
-    {
-      'author': 'Niki',
-      'title': 'turkey sub',
-      'directions': 'combine everything',
-      'date_posted': 'March 2024'
-    },
-    {
-      'author': 'Tony',
-      'title': 'Chicken sub',
-      'directions': 'combine everything',
-      'date_posted': 'July 2024'
-    }
-]
-
+      
 
 def home(request):
     recipes = models.Recipe.objects.all()
@@ -40,11 +26,38 @@ class RecipeDetailView(DetailView):
 
 class RecipeCreateView(CreateView, LoginRequiredMixin):
       model = models.Recipe
-      fields = ['title', 'description']    
+      fields = ['title', 'description'] 
 
-def form_valid(self, form):  
-   form.instance.author = self.request.user   
-   return super(RecipeCreateView, self).form_valid(form)
+      def form_valid(self, form):  
+        form.instance.author = self.request.user   
+        return super().form_valid(form)   
+
+
+class RecipeUpdateView(UpdateView, UserPassesTestMixin, LoginRequiredMixin):
+      model = models.Recipe
+      fields = ['title', 'description']  
+
+       
+      def test_func(self):
+        recipe = self.get_object()
+        return self.request.user == recipe.author
+  
+
+      def form_valid(self, form):  
+        form.instance.author = self.request.user   
+        return super().form_valid(form)
+      
+     
+class RecipeDeleteView(DeleteView, UserPassesTestMixin, LoginRequiredMixin):
+      model = models.Recipe
+      success_url = reverse_lazy('home')
+       
+      def test_func(self):
+        recipe = self.get_object()
+        return self.request.user == recipe.author
+
 
 def about(request):
         return render(request, "recipes/about.html")
+
+
