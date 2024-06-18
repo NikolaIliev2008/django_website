@@ -8,6 +8,7 @@ from rest_framework import status
 from .models import Recipe
 from .serializers import RecipeSerializer
 from django.urls import reverse_lazy
+from django.http import HttpResponse
 
       
 
@@ -59,5 +60,4 @@ class RecipeDeleteView(DeleteView, UserPassesTestMixin, LoginRequiredMixin):
 
 def about(request):
         return render(request, "recipes/about.html")
-
 
